@@ -29,35 +29,45 @@ describe "User pages" do
           end
         end
       end
-      
-      describe "delete links" do
+     end 
+     
+     describe "delete links" do
 
-            it { should_not have_link('delete') }
+         before(:all) { 30.times { FactoryGirl.create(:user) } }
+         after(:all)  { User.delete_all }
 
-            describe "as an admin user" do
-              let(:admin) { FactoryGirl.create(:admin) }
-              before do
-                sign_in admin
-                visit users_path
-              end
+         describe "as an admin user" do
+           let(:admin) { FactoryGirl.create(:admin) }
+           before do
+             sign_in admin
+             visit users_path
+           end
 
-              it { should have_link('delete', href: user_path(User.first)) }
-              it "should be able to delete another user" do
-                expect do
-                  click_link('delete', match: :first)
-                end.to change(User, :count).by(-1)
-              end
-              it { should_not have_link('delete', href: user_path(admin)) }
-            end
+           it { should have_link('delete', href: user_path(User.first)) }
+           it "should be able to delete another user" do
+             expect do
+               click_link('delete', match: :first)
+             end.to change(User, :count).by(-1)
+           end
+           it { should_not have_link('delete', href: user_path(admin)) }
+         end
       end
-  end
   
   describe "profile page" do
-    let(:user) { FactoryGirl.create(:user) }
-    before { visit user_path(user) }
+      let(:user) { FactoryGirl.create(:user) }
+      let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
+      let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
 
-    it { should have_content(user.name) }
-    it { should have_title(user.name) }
+      before { visit user_path(user) }
+
+      it { should have_content(user.name) }
+      it { should have_title(user.name) }
+
+      describe "microposts" do
+        it { should have_content(m1.content) }
+        it { should have_content(m2.content) }
+        it { should have_content(user.microposts.count) }
+      end
   end
 
   describe "signup page" do
@@ -84,7 +94,7 @@ describe "User pages" do
           fill_in "Name",         with: "Example User"
           fill_in "Email",        with: "user@example.com"
           fill_in "Password",     with: "foobar"
-          fill_in "Confirmation", with: "foobar"
+          fill_in "Confirm Password", with: "foobar"
         end
 
         it "should create a user" do

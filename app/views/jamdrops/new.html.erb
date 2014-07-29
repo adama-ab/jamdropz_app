@@ -1,0 +1,41 @@
+<%= s3_uploader_form callback_url: jamdrops_url,
+  id: "s3_uploader",
+  acl: "private",
+  callback_param: "direct_upload_url",
+  max_file_size: 40.megabytes do %>
+  <%= file_field_tag :file, multiple: false %>
+<% end %>
+<br/>
+ 
+ 
+<div id="uploads_container"></div>
+<script id="template-upload" type="text/x-tmpl">
+<div id="upload_{%=o.unique_id%}" class="upload">
+  <h5>{%=o.name%}</h5>
+  <div class="progress progress-striped active"><div class="bar" style="width: 0%"></div></div>
+</div>
+</script>
+<br/>
+ 
+<%= form_for(@jamdrop) do |f| %>
+ 
+<% if @jamdrop.errors.any? %>
+<ul>
+  <% @jamdrop.errors.full_messages.each do |msg| %>
+    <li><%= msg %></li>
+  <% end %>
+</ul>
+<% end %>
+ 
+  
+    <%= f.hidden_field :direct_upload_url %>
+ 
+    <%= f.hidden_field :attached_file_file_name %>
+    <%= f.hidden_field :attached_file_file_size %>
+    <%= f.hidden_field :attached_file_content_type %>
+ 
+    <%= f.hidden_field :attached_file_file_path %>
+ 
+    <%= f.submit "Upload" %>
+<br/>
+<% end %>

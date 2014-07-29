@@ -1,0 +1,5 @@
+<div>
+  <%= jamdrop.upload_file_name %><br />
+  <%= number_to_human_size(jamdrop.upload_file_size) %><br />
+  <%= link_to "Download", download_jamdrop_path(id: jamdrop.id, filename: jamdrop.upload_file_name) %>
+</div>
